@@ -1,0 +1,15 @@
+Salto em Comprimento
+Salto em Altura
+Estafetas
+Sprint 60m
+Sprint 100m
+Sprint 200m
+Sprint 400m
+Barreiras 60m
+Barreiras 100m
+Barreiras 400m
+Lançamento do Peso
+Lançamento do Martelo
+Lançamento do Dardo
+Lançamento do Disco
+Maratona
