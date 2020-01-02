@@ -28,13 +28,6 @@ def gerar_dia(year, month):
     return random.randint(1, dayEdge)
 
 if __name__ == "__main__":
-    # TODO: Elaminar a possibilidade de médicos poderem dar diferentes consultas à mesma hora, assim como a possibilidade de o mesmo atleta ter dois tipos de exame à mesma hora.
-    # TODO: Inserir constraints que forçem o ponto anterior
-    # TODO: Verificar se os testes não coincidem com dias de provas, e se as análises não coincidem com o dia anterior das provas
-    # TODO: Procedimento para iluminar todos os testes clínicos cuja data já passou, mas não foram realizados
-    # TODO: Acrescentar dados no passado para testar o TODO anterior
-
-    # UPDATE TesteClinico SET realizado=1 WHERE id_testeclinico=%d;
     random.seed(0)
 
     atletas = read_file('atletas.txt')
@@ -102,6 +95,7 @@ if __name__ == "__main__":
 
         print(f"INSERT INTO Prova (data_hora, duração, id_modalidade) VALUES ('{data_hora}', {duracao}, {id_modalidade});")
 
+
     i = 1
     for _ in range(random.randint(1, 60)): # Selecionar o nº de testes que vamos inserir
         id_atelta_que_realizou = random.randint(1, len(atletas))
@@ -110,34 +104,38 @@ if __name__ == "__main__":
             year = random.randint(2020, 2021)
             month = random.randint(1, 12)
             day = gerar_dia(year, month)
-            hour = random.randint(9, 17)
-            minute = random.choice([0, 15, 30, 45])
+            hour = random.randint(9, 20)
+            minute = random.randint(0, 59)
             data_hora = '{}-{}-{}T{}:{}'.format(year, month, day, hour, minute)
 
-            # nome = random.choice(tipos_testes) # ??
-            nome = 'Análises'
-            realizado = random.randint(0, 1) # TODO: Falta verificar se a data_hora está no passado!
+            nome = random.choice(tipos_testes) # ??
+            realizado = random.randint(0, 1)
             preco = random.randint(5, 15) # 5-15 €
+            duracao = random.randint(5, 30) # 5-30 mins
 
             id_medico_que_realizou = random.randint(1, len(medicos))
 
-            print(f"INSERT INTO TesteClinico (nome, realizado, preço, data_hora, id_atleta, id_profissional) VALUES ('{nome}', {realizado}, {preco}, '{data_hora}', '{id_atelta_que_realizou}', '{id_medico_que_realizou}');")
+            print(f"INSERT INTO TesteClinico (nome, realizado, preço, duração, data_hora) VALUES ('{nome}', {realizado}, {preco}, {duracao}, '{data_hora}');")
+            print(f"INSERT INTO TesteClinico_Profissional (id_testeclinico, id_profissional) VALUES ({i}, {id_medico_que_realizou});")
+            print(f"INSERT INTO Atleta_TesteClinico (id_testeclinico, id_atleta) VALUES ({i}, {id_atelta_que_realizou});")
 
             i += 1
 
     for j in range(3):
-        hour = random.randint(9, 17)
-        minute = random.choice([0, 15, 30, 45])
+        hour = random.randint(9, 20)
+        minute = random.randint(0, 59)
         data_hora = '{}-{}-{}T{}:{}'.format(2020, 1, 3 + j, hour, minute)
 
-        # nome = random.choice(tipos_testes) # ??
-        nome = 'Análises'
-        realizado = random.randint(0, 1) # TODO: Falta verificar se a data_hora está no passado!
+        nome = random.choice(tipos_testes) # ??
+        realizado = random.randint(0, 1)
         preco = random.randint(5, 15) # 5-15 €
+        duracao = random.randint(5, 30) # 5-30 mins
 
         id_medico_que_realizou = random.randint(1, len(medicos))
         id_atelta_que_realizou = random.randint(1, len(atletas))
 
-        print(f"INSERT INTO TesteClinico (nome, realizado, preço, data_hora, id_atleta, id_profissional) VALUES ('{nome}', {realizado}, {preco}, '{data_hora}', '{id_atelta_que_realizou}', '{id_medico_que_realizou}');")
+        print(f"INSERT INTO TesteClinico (nome, realizado, preço, duração, data_hora) VALUES ('{nome}', {realizado}, {preco}, {duracao}, '{data_hora}');")
+        print(f"INSERT INTO TesteClinico_Profissional (id_testeclinico, id_profissional) VALUES ({i}, {id_medico_que_realizou});")
+        print(f"INSERT INTO Atleta_TesteClinico (id_testeclinico, id_atleta) VALUES ({i}, {id_atelta_que_realizou});")
 
         i += 1
