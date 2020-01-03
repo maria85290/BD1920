@@ -8,7 +8,8 @@ mydb = mysql.connector.connect(
     host = "localhost",
     user = "root",
     passwd = getpass("MySQL password: "),
-    database = "TestesClinicos"
+    database = "TestesClinicos",
+    auth_plugin = "mysql_native_password"
 )
 
 print("Connecting to MySQL database...")
