@@ -30,6 +30,12 @@ converted_results_testes = list(map(lambda entry: {"tipo": entry[0], "realizado"
 print("Connecting to MongoDB...")
 mongo_client = MongoClient('localhost', 27017)
 
+if "TestesClinicos" in mongo_client.list_database_names():
+    print("TestesClinicos already exists.")
+    answer = input("You wish to drop it? 'y' to Yes, anything else to No.\n")
+    if answer.lower() == 'y':
+        mongo_client.drop_database("TestesClinicos")
+
 testesClinicos = mongo_client["TestesClinicos"]
 prova = testesClinicos["Prova"]
 testeClinico = testesClinicos["TesteClinico"]
