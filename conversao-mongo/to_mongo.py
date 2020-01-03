@@ -3,6 +3,7 @@ from pymongo import MongoClient
 from datetime import date
 from datetime import datetime
 from getpass import getpass
+import sys
 
 mydb = mysql.connector.connect(
     host = "localhost",
@@ -37,19 +38,19 @@ if "TestesClinicos" in mongo_client.list_database_names():
     answer = input("You wish to drop it? 'y' to Yes, anything else to No.\n")
     if answer.lower() == 'y':
         mongo_client.drop_database("TestesClinicos")
-
-        testesClinicos = mongo_client["TestesClinicos"]
-        prova = testesClinicos["Prova"]
-        testeClinico = testesClinicos["TesteClinico"]
-
-        print("Inserting documents...")
-        for document in converted_results_provas:
-            prova.insert_one(document)
-
-        for document in converted_results_testes:
-            testeClinico.insert_one(document)
-
-        print("Done!")
-
     else:
         print("Cancelled.")
+        sys.exit()
+
+testesClinicos = mongo_client["TestesClinicos"]
+prova = testesClinicos["Prova"]
+testeClinico = testesClinicos["TesteClinico"]
+
+print("Inserting documents...")
+for document in converted_results_provas:
+    prova.insert_one(document)
+
+for document in converted_results_testes:
+    testeClinico.insert_one(document)
+
+print("Done!")
