@@ -1,3 +1,5 @@
+#!/bin/python3
+
 import mysql.connector
 from pymongo import MongoClient
 from datetime import date
@@ -10,7 +12,7 @@ mydb = mysql.connector.connect(
     user = "root",
     passwd = getpass("MySQL password: "),
     database = "TestesClinicos",
-    auth_plugin = "mysql_native_password"
+    auth_plugin='mysql_native_password'
 )
 
 print("Connecting to MySQL database...")
