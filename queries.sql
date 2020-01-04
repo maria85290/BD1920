@@ -1,3 +1,4 @@
+SET SQL_SAFE_UPDATES = 0;
 
 -- Listar todas as modalidades registadas na base de dados
 select nome from Modalidade ;
@@ -85,3 +86,14 @@ create user 'profissional'@'localhost' IDENTIFIED BY 'prof';
 GRANT select ON Profissionais_TesteClinico_ProxMes To 'profissional'@'localhost';
 GRANT insert, update on TestesClinicos.TesteClinico To 'profissional'@'localhost';
 SHOW GRANTS FOR 'profissional'@'localhost';
+
+DELIMITER //
+CREATE PROCEDURE Eliminar_Testes_Nao_Realizados()
+BEGIN
+	DELETE FROM TesteClinico WHERE data_hora < NOW() AND realizado = 0;
+END //
+DELIMITER ;
+
+SELECT * FROM TesteClinico WHERE data_hora < NOW() AND realizado = 0;
+CALL Eliminar_Testes_Nao_Realizados();
+SELECT * FROM TesteClinico WHERE data_hora < NOW() AND realizado = 0;
