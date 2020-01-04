@@ -134,7 +134,7 @@ if __name__ == "__main__":
         primeiros_nomes_genero[x[0]] = x[1]
 
     # Selecionar o número de profissionais e de atletas que vamos efetivamente meter na DB
-    medicos = [x for x in medicos if random.randint(1, 10) == 1] # Inserir apenas 1/6 dos profissionais
+    medicos = [x for x in medicos if random.randint(1, 10) == 1] # Inserir apenas 1/10 dos profissionais
     atletas = [x for x in atletas if random.randint(1, 3) == 1] # Inserir apenas 1/3 dos atletas
 
     gerar_sql_modalidades(modalidades)

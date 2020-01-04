@@ -1,112 +1,66 @@
+-- Configuração necessária para poder apagar certos dados da base de dados
 SET SQL_SAFE_UPDATES = 0;
 
--- Listar todas as modalidades registadas na base de dados
-select nome from Modalidade ;
+-- Query 1) Listar todas as modalidades registadas na base de dados
+SELECT nome AS 'Atleta'
+	FROM Modalidade;
 
--- Listar os atletas registados:
-select nome from  Atleta;
+-- Query 2) Listar os atletas registados
+SELECT nome as 'Atleta'
+	FROM  Atleta;
 
--- listas os atletas e as suas modalidades.     
-select a.nome , m.nome from Atleta a, Modalidade m where a.id_modalidade = m.id_modalidade;
+-- Query 3) Listar os atletas e as suas modalidades
+SELECT a.nome AS 'Atleta', m.nome AS 'Modalidade'
+	FROM Atleta a, Modalidade m
+    WHERE a.id_modalidade = m.id_modalidade;
 
--- listar os nome dos atletas de uma dada modalidade. Por exemplo: 'salto em altura'
- select a.nome, m.nome from Atleta a, Modalidade m 
-where a.id_modalidade = m.id_modalidade and m.nome = 'salto em altura';
+-- Query 4) Listar os nome dos atletas de uma dada modalidade, por exemplo: 'Salto em Altura'
+SELECT a.nome AS 'Atleta', m.nome AS 'Modalidade'
+	FROM Atleta a, Modalidade m 
+	WHERE a.id_modalidade = m.id_modalidade
+		  AND m.nome = 'Salto em Altura';
 
--- Os testes que se podem realizar:
- select nome from TesteClinico;
+-- Query 5) Listar o tipo de testes que já foram realizados
+SELECT nome AS 'Tipo de Teste'
+	FROM TesteClinico
+	GROUP BY nome;
 
--- verificar os testes agendados, retornando o nome dos atletas que tem testes agendados
-select a.nome from TesteClinico t, Atleta a
-where a.id_atleta = t.id_atleta and t.realizado = 0;
+-- Query 6) Verificar os testes agendados, retornando o nome dos atletas que tem testes agendados
+SELECT a.nome AS 'Atleta'
+	FROM TesteClinico t, Atleta a
+	WHERE a.id_atleta = t.id_atleta
+		  AND t.realizado = 0
+	GROUP BY a.nome;
  
--- O nome dos atletas que foram submetidos a testes clinicos e a quantos testes foram submetidos
-select distinct a.nome as nome_atleta, (select count(*) from TesteClinico t where a.id_Atleta = t.id_atleta and t.realizado = 1) as numero_Testes_realizados from  Atleta a 
-where (select count(*) from TesteClinico t where a.id_Atleta = t.id_atleta and t.realizado = 1)>=1;
+-- Query 7) O nome dos atletas que foram submetidos a testes clinicos e a quantos testes foram submetidos
+SELECT DISTINCT a.nome as 'Atleta',
+				(SELECT COUNT(*) FROM TesteClinico t WHERE a.id_Atleta = t.id_atleta AND t.realizado = 1) AS 'Número de Testes Realizados'
+	FROM  Atleta a 
+	WHERE (SELECT COUNT(*) FROM TesteClinico t WHERE a.id_Atleta = t.id_atleta AND t.realizado = 1) >= 1;
 
 
--- verificar os dias em que um determinado atleta (por exmplo "LUIS PEDRO BARBOSA FERREIRO") tem algum teste clinico
-select distinct (t.data_hora) from Atleta a, TesteClinico t 
-where a.nome = 'Luís Pedro Barbosa Ferreira' and a.id_atleta=t.id_atleta and t.realizado = 0;
+-- Query 8) Verificar os dias em que um determinado atleta (por exmplo "LUIS PEDRO BARBOSA FERREIRO") tem algum teste clinico
+SELECT DISTINCT t.data_hora AS 'Data/Hora'
+	FROM Atleta a, TesteClinico t 
+	WHERE a.nome = 'Luís Pedro Barbosa Ferreira'
+		  AND a.id_atleta = t.id_atleta
+		  AND t.realizado = 0;
 
--- nome dos profissionais que trabalham na clinica
-select nome AS Nome from Profissional;
+-- Query 9) Nome dos profissionais que trabalham na clínica
+SELECT nome AS 'Médico'
+	FROM Profissional;
 
--- numero de profissionais que trabalham na clinica
-select distinct count(*) from Profissional;
+-- Query 10) Número de profissionais que trabalham na clínica
+SELECT DISTINCT COUNT(*)
+	FROM Profissional;
 
--- Numero dos profissionais que ja realizaram pelo menos 1 teste clinico
-select distinct count(*) as 'Numero de Profissionais' from Profissional p where (
-	select count(*) from TesteClinico t where p.id_profissional = t.id_profissional) >= 1;
+-- Query 11) Número dos profissionais que já realizaram pelo menos 1 teste clínico
+SELECT DISTINCT COUNT(*) AS 'Número de Profissionais'
+	FROM Profissional p
+    WHERE (SELECT COUNT(*) FROM TesteClinico t WHERE p.id_profissional = t.id_profissional) >= 1;
 
--- atletas cujo o peso se encontra entre 2 paramentros, considerado peso saudavel. Por exemplo 60 e 80 kg 
-select a.nome from Atleta a where (a.peso >= 60) and (a.peso <= 80);
-
--- associar os atletas aos testes que têm testes agendados nas próximas 2 semanas
-CREATE VIEW Atleta_TesteClinico_Prox2semanas AS (
-	SELECT a.nome AS Atleta, t.nome AS 'Tipo de Teste', t.data_hora as 'Data/Hora' FROM Atleta a, TesteClinico t 
-    WHERE a.id_atleta = t.id_atleta
-			and t.data_hora BETWEEN CURRENT_DATE() AND DATE_ADD(CURRENT_DATE(), INTERVAL 14 DAY) AND t.nome NOT LIKE '%Controlo Anti-Doping%'
-	);
-
--- associar os profissionais aos testes que têm marcados no próximo mês
-CREATE VIEW Profissionais_TesteClinico_ProxMes AS (
-	SELECT p.nome as Profissional, t.data_hora as 'Dia e hora' FROM Profissional p, TesteClinico t	
-    where p.id_profissional = t.id_profissional and t.data_hora BETWEEN CURRENT_DATE() AND DATE_ADD(CURRENT_DATE(), INTERVAL 30 DAY)
-);
-
--- associar o profissional ao atleta a quem realizaram um teste 
-CREATE VIEW Profissionais_Atletas AS (
-SELECT p.nome as Profissional, a.nome as 'Atletas consultados' FROM Profissional p, Atleta a, TesteClinico t
-where t.id_profissional = p.id_profissional and t.id_atleta = a.id_atleta 
-);
-
--- associar a cada atleta as provas de atletismo que vai realizar 
-CREATE VIEW Atletas_ProvasAgendadas AS (
-SELECT a.nome as Atleta , m.nome as Modalidade, p.data_hora FROM Atleta a, Modalidade m, Prova p
-where m.id_modalidade = a.id_modalidade and m.id_modalidade and m.id_modalidade = p.id_modalidade
-);
-
--- Associar a cada teste_Clinico o atleta e o profissional envolvido
-
-CREATE VIEW Teste_profissional_Atleta AS (
-SELECT t.nome as TesteClinico, a.nome as Atleta, p.nome as Profissional FROM Atleta a, TesteClinico t, Profissional p
-where t.id_profissional = p.id_profissional and t.id_atleta = a.id_atleta
-);
-
-
-select * from Atleta_TesteClinico_Prox2semanas;
-select * from Profissionais_TesteClinico_ProxMes;
-
-create user 'atleta'@'localhost' IDENTIFIED BY 'atl';
-GRANT select ON TestesClinicos.atletas_testes To 'atleta'@'localhost';
-GRANT select ON TestesClinicos.Atletas_ProvasAgendadas To 'atleta'@'localhost';
-show grants for 'atleta'@'localhost';
-
-
-create user 'profissional'@'localhost' IDENTIFIED BY 'prof';
-GRANT select ON Profissionais_TesteClinico_ProxMes To 'profissional'@'localhost';
-GRANT execute ON procedure Passar_teste_a_realizado To 'profissional'@'localhost';
-GRANT insert, update on TestesClinicos.TesteClinico To 'profissional'@'localhost';
-SHOW GRANTS FOR 'profissional'@'localhost';
-
-
-DELIMITER //
-CREATE PROCEDURE Eliminar_Testes_Nao_Realizados()
-BEGIN
-	DELETE FROM TesteClinico WHERE data_hora < NOW() AND realizado = 0;
-END //
-DELIMITER ;
-
-SELECT * FROM TesteClinico WHERE data_hora < NOW() AND realizado = 0;
-CALL Eliminar_Testes_Nao_Realizados();
-SELECT * FROM TesteClinico WHERE data_hora < NOW() AND realizado = 0;
-
-DELIMITER //
-CREATE PROCEDURE Passar_teste_a_realizado(id_prof int, dataHora datetime)
-BEGIN
-	update TesteClinico set realizado=1 WHERE data_hora = dataHora AND id_prof = id_profissional;
-END //
-DELIMITER ;
-
-call Passar_teste_a_realizado(19, '2020-05-12 11:30:00');
+-- Query 12) Atletas cujo o peso se encontra dentro de um intervalo (i.e., têm um peso saudável). Por exemplo 60 e 90 kg 
+SELECT a.nome
+	FROM Atleta a
+	WHERE a.peso >= 60
+		  AND a.peso <= 90;
