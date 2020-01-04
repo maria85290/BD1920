@@ -22,8 +22,15 @@ if __name__ == "__main__":
 
     print("Querying MySQL TestesClinicos...")
 
-    query_prova = open("prova.sql").read()
-    query_teste = open("teste.sql").read()
+    query_prova = "SELECT p.data_hora, p.duração, m.nome FROM Prova p \
+                   INNER JOIN Modalidade m ON p.id_modalidade = m.id_modalidade;"
+                   
+    query_teste = "SELECT tc.nome, tc.realizado, tc.preço, tc.data_hora, atl.nome AS 'nome_atleta', atl.sexo AS 'sexo_atleta', \
+                          m.nome AS 'modalidade_atleta', atl.peso AS 'peso_atleta', atl.morada as 'morada_atleta', \
+                          atl.DOB as 'DOB_atleta', prof.nome as 'nome_professional' FROM TesteClinico tc \
+                   INNER JOIN Atleta atl ON atl.id_atleta = tc.id_atleta \
+                   INNER JOIN Profissional prof ON prof.id_profissional = tc.id_profissional \
+                   INNER JOIN Modalidade m ON atl.id_modalidade = m.id_modalidade;"
 
     cursor.execute(query_teste)
     results_teste = cursor.fetchall()
