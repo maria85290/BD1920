@@ -80,12 +80,16 @@ select * from Profissionais_TesteClinico_ProxMes;
 
 create user 'atleta'@'localhost' IDENTIFIED BY 'atl';
 GRANT select ON TestesClinicos.atletas_testes To 'atleta'@'localhost';
+GRANT select ON TestesClinicos.Atletas_ProvasAgendadas To 'atleta'@'localhost';
 show grants for 'atleta'@'localhost';
+
 
 create user 'profissional'@'localhost' IDENTIFIED BY 'prof';
 GRANT select ON Profissionais_TesteClinico_ProxMes To 'profissional'@'localhost';
+GRANT execute ON procedure Passar_teste_a_realizado To 'profissional'@'localhost';
 GRANT insert, update on TestesClinicos.TesteClinico To 'profissional'@'localhost';
 SHOW GRANTS FOR 'profissional'@'localhost';
+
 
 DELIMITER //
 CREATE PROCEDURE Eliminar_Testes_Nao_Realizados()
@@ -97,3 +101,12 @@ DELIMITER ;
 SELECT * FROM TesteClinico WHERE data_hora < NOW() AND realizado = 0;
 CALL Eliminar_Testes_Nao_Realizados();
 SELECT * FROM TesteClinico WHERE data_hora < NOW() AND realizado = 0;
+
+DELIMITER //
+CREATE PROCEDURE Passar_teste_a_realizado(id_prof int, dataHora datetime)
+BEGIN
+	update TesteClinico set realizado=1 WHERE data_hora = dataHora AND id_prof = id_profissional;
+END //
+DELIMITER ;
+
+call Passar_teste_a_realizado(19, '2020-05-12 11:30:00');
