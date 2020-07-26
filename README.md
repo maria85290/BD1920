@@ -1,2 +1,5 @@
-# bds1920
-Trabalho de Bases de Dados onde todos temos a ideia de chumbar este ano.
+# BD1920
+
+Trabalho Prático de Bases de Dados.
+
+Universidade do Minho - Licenciatura em Ciências da Computação (2019/2020)
